@@ -313,6 +313,13 @@ Reveal.addEventListener( 'ready', function() {
 
 		Reveal.slide( 3, 0, 0 );
 		equal( fragmentSlide.querySelectorAll( '.fragment.visible' ).length, 2, 'both fragments of same index are shown' );
+
+		// This slide has three fragments, first one is index 0, second and third have index 1
+		Reveal.slide( 2, 2, 0 );
+		equal( Reveal.getIndices().f, 0, 'returns correct index for first fragment' );
+
+		Reveal.slide( 2, 2, 1 );
+		equal( Reveal.getIndices().f, 1, 'returns correct index for two fragments with same index' );
 	});
 
 	test( 'Index generation', function() {
@@ -486,6 +493,23 @@ Reveal.addEventListener( 'ready', function() {
 
 	test( 'img with data-src', function() {
 		strictEqual( document.querySelectorAll( '.reveal section img[src]' ).length, 1, 'Image source has been set' );
+	});
+
+	test( 'video with data-src', function() {
+		strictEqual( document.querySelectorAll( '.reveal section video[src]' ).length, 1, 'Video source has been set' );
+	});
+
+	test( 'audio with data-src', function() {
+		strictEqual( document.querySelectorAll( '.reveal section audio[src]' ).length, 1, 'Audio source has been set' );
+	});
+
+	test( 'iframe with data-src', function() {
+		Reveal.slide( 0, 0 );
+		strictEqual( document.querySelectorAll( '.reveal section iframe[src]' ).length, 0, 'Iframe source is not set' );
+		Reveal.slide( 2, 1 );
+		strictEqual( document.querySelectorAll( '.reveal section iframe[src]' ).length, 1, 'Iframe source is set' );
+		Reveal.slide( 2, 2 );
+		strictEqual( document.querySelectorAll( '.reveal section iframe[src]' ).length, 0, 'Iframe source is not set' );
 	});
 
 	test( 'background images', function() {
