@@ -138,7 +138,8 @@ module.exports = function(grunt) {
 					{src: ['js/reveal.min.js'], dest: 'dist/'},
 					{src: ['css/reveal.min.css'], dest:'dist/'},
 					{expand: true, src: ['css/theme/*.css'], dest: 'dist/', filter: 'isFile'},
-					{expand: true, src: ['plugin/*'], dest: 'dist/'}
+					{expand: true, src: ['plugin/**'], dest: 'dist/'},
+					{expand: true, src: ['lib/**/*.{css,js}','lib/font/**'], dest: 'dist/'}
 				]
 			}
 		}
