@@ -102,7 +102,6 @@ html:-moz-full-screen-ancestor {
 
 .reveal .slides section .fragment.zoom-in {
 	transform: scale( 0.1 );
-
 	&.visible {
 		transform: none;
 	}
@@ -369,6 +368,7 @@ html:-moz-full-screen-ancestor {
 	overflow: visible;
 	z-index: 1;
 	text-align: center;
+    transition: perspective .4s ease;
 	perspective: 600px;
 	perspective-origin: 50% 40%;
 }
@@ -380,9 +380,15 @@ html:-moz-full-screen-ancestor {
 .reveal .slides>section,
 .reveal .slides>section>section {
 	display: none;
-	position: absolute;
-	width: 100%;
-	padding: 20px 0px;
+
+    position: absolute;
+    top: 0%;
+    left: 0%;
+    
+	box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    padding: 0px 0px;
 
 	z-index: 10;
 	transform-style: preserve-3d;
@@ -408,22 +414,11 @@ html:-moz-full-screen-ancestor {
 	transition-duration: 1200ms;
 }
 
-.reveal .slides>section.stack {
-	padding-top: 0;
-	padding-bottom: 0;
-}
-
 .reveal .slides>section.present,
 .reveal .slides>section>section.present {
 	display: block;
 	z-index: 11;
 	opacity: 1;
-}
-
-.reveal.center,
-.reveal.center .slides,
-.reveal.center .slides section {
-	min-height: 0 !important;
 }
 
 /* Don't allow interaction with invisible slides */
@@ -444,6 +439,38 @@ html:-moz-full-screen-ancestor {
 .reveal .slides>section>section.past,
 .reveal .slides>section>section.future {
 	opacity: 0;
+}
+
+/*********************************************
+ * SLIDE CONTENTS
+ *********************************************/
+.reveal .slides .slide-content {
+    width: 100%;
+}
+
+.reveal.center .slides .slide-body {
+    min-height: 0;
+    position: absolute;
+    top: 50%;
+    transform: translate(0%,-50%);
+}
+
+/*********************************************
+ * LAYOUT DEBUGGING
+ *********************************************/
+
+.reveal.show-canvas .slides {
+    background: rgba(150,255,0,0.3);
+}
+.reveal.show-canvas .slides>section,
+.reveal.show-canvas .slides>section>section {
+    background: rgba(255,155,0,0.3);
+}
+.reveal.show-canvas .slides>section.stack {
+    background: rgba(0,0,255,0.3);
+}
+.reveal.show-canvas .slides .slide-body {
+    background: rgba(0,255,0,0.3);
 }
 
 
@@ -471,7 +498,6 @@ html:-moz-full-screen-ancestor {
 		@content;
 	}
 }
-
 @mixin transition-vertical-past($style) {
 	.reveal .slides>section>section[data-transition=#{$style}].past,
 	.reveal .slides>section>section[data-transition~=#{$style}-out].past,
@@ -647,7 +673,7 @@ html:-moz-full-screen-ancestor {
  *********************************************/
 
 .reveal.page .slides {
-	perspective-origin: 0% 50%;
+    perspective-origin: 50% 50%;
 	perspective: 3000px;
 }
 
@@ -832,7 +858,6 @@ html:-moz-full-screen-ancestor {
 		background-position: 50% 50%;
 		background-repeat: no-repeat;
 		background-size: cover;
-
 		transition: all 800ms cubic-bezier(0.260, 0.860, 0.440, 0.985);
 	}
 
@@ -961,7 +986,7 @@ html:-moz-full-screen-ancestor {
 .reveal[data-background-transition=zoom]>.backgrounds .slide-background>.slide-background.past,
 .reveal>.backgrounds .slide-background>.slide-background.past[data-background-transition=zoom] {
 	opacity: 0;
-		visibility: hidden;
+	visibility: hidden;
 		transform: scale(16);
 }
 .reveal[data-background-transition=zoom]>.backgrounds .slide-background>.slide-background.future,
