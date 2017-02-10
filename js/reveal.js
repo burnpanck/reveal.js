@@ -28,10 +28,11 @@
 	// The reveal.js version
 	var VERSION = '3.4.1';
 
-	var SLIDES_SELECTOR = '.slides section',
-		HORIZONTAL_SLIDES_SELECTOR = '.slides>section',
-		VERTICAL_SLIDES_SELECTOR = '.slides>section.present>section',
-		HOME_SLIDE_SELECTOR = '.slides>section:first-of-type',
+    var SLIDES_SELECTOR = '.reveal .slides section.slide',
+        STACK_SELECTOR = '.reveal .slides section.stack',
+		HORIZONTAL_SLIDES_SELECTOR = '.reveal .slides section.Hlayout',
+		VERTICAL_SLIDES_SELECTOR = '.reveal .slides>section.present>section',
+		HOME_SLIDE_SELECTOR = '.reveal .slides>section:first-of-type',
 		UA = navigator.userAgent,
 
 		// Configuration defaults, can be overridden at initialization time
@@ -528,7 +529,9 @@
 		dom.controlsNext = toArray( document.querySelectorAll( '.navigate-next' ) );
 
 		dom.statusDiv = createStatusDiv();
-	}
+
+        setupSlides();
+    }
 
 	/**
 	 * Creates a hidden div with role aria-live to announce the
@@ -776,6 +779,33 @@
 		return node;
 
 	}
+
+    /**
+	 * Walks all the slides and adapts the DOM for the presentation if needed.
+	 */
+    function setupSlides() {
+        toArray(dom.slides.querySelectorAll('.slides > section')).forEach(setupHLayoutDOM);
+    }
+    
+    function setupHLayoutDOM(hlayout){
+        hlayout.classList.add('Hlayout');
+        var vlayout = toArray(hlayout.querySelectorAll('.slides > section.Hlayout > section'));
+        if(vlayout.length){
+            // this is a stack
+            hlayout.classList.add('stack');
+            vlayout.forEach(setupVLayoutDOM);
+        } else {
+            // this is a slide
+            setupSlideDOM(hlayout);
+        }
+    }
+    function setupVLayoutDOM(vlayout){
+        vlayout.classList.add('Vlayout');
+        setupSlideDOM(vlayout);
+    }
+    function setupSlideDOM(slide){
+        slide.classList.add('slide');
+    }
 
 	/**
 	 * Creates the slide background elements and appends them
@@ -2022,7 +2052,10 @@
 			dom.wrapper.appendChild( dom.background );
 
 			// Clean up changes made to slides
-			toArray( dom.wrapper.querySelectorAll( SLIDES_SELECTOR ) ).forEach( function( slide ) {
+			toArray( dom.wrapper.querySelectorAll(
+                HORIZONTAL_SLIDES_SELECTOR + ', ' + SLIDES_SELECTOR
+            ) ).forEach( function( slide ) {
+				// Resets all transforms to use the external styles
 				transformElement( slide, '' );
 
 				slide.removeEventListener( 'click', onOverviewSlideClicked, true );
@@ -2331,7 +2364,7 @@
 			if ( dom.wrapper.querySelector( HOME_SLIDE_SELECTOR ).classList.contains( 'present' ) ) {
 				// Launch async task
 				setTimeout( function () {
-					var slides = toArray( dom.wrapper.querySelectorAll( HORIZONTAL_SLIDES_SELECTOR + '.stack') ), i;
+					var slides = toArray( dom.wrapper.querySelectorAll( STACK_SELECTOR ) ), i;
 					for( i in slides ) {
 						if( slides[i] ) {
 							// Reset stack
@@ -2376,6 +2409,9 @@
 		removeEventListeners();
 		addEventListeners();
 
+        // Ensure slides conform to our DOM requirements
+        setupSlides();
+        
 		// Force a layout to make sure the current config is accounted for
 		layout();
 
@@ -2440,18 +2476,9 @@
 	 */
 	function sortAllFragments() {
 
-		var horizontalSlides = toArray( dom.wrapper.querySelectorAll( HORIZONTAL_SLIDES_SELECTOR ) );
-		horizontalSlides.forEach( function( horizontalSlide ) {
-
-			var verticalSlides = toArray( horizontalSlide.querySelectorAll( 'section' ) );
-			verticalSlides.forEach( function( verticalSlide, y ) {
-
-				sortFragments( verticalSlide.querySelectorAll( '.fragment' ) );
-
-			} );
-
-			if( verticalSlides.length === 0 ) sortFragments( horizontalSlide.querySelectorAll( '.fragment' ) );
-
+		var slides = toArray( dom.wrapper.querySelectorAll( SLIDES_SELECTOR ) );
+		slides.forEach( function( slide ) {
+            sortFragments( slide.querySelectorAll( '.fragment' ) );
 		} );
 
 	}
@@ -3323,7 +3350,8 @@
 
 		var horizontalSlides = toArray( dom.wrapper.querySelectorAll( HORIZONTAL_SLIDES_SELECTOR ) );
 
-		// The number of past slides
+		// The number of past and total slides
+		var totalCount = dom.wrapper.querySelectorAll( SLIDES_SELECTOR ).length;
 		var pastCount = 0;
 
 		// Step through all slides and count the past ones
@@ -4460,8 +4488,13 @@
 	 * closest approximate horizontal slide using this equation:
 	 *
 	 * ( clickX / presentationWidth ) * numberOfSlides
+<<<<<<< HEAD
+     *
+     * TODO: This formula does not match the actual progress display!
+=======
 	 *
 	 * @param {object} event
+>>>>>>> 3.4.1
 	 */
 	function onProgressClicked( event ) {
 
