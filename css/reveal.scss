@@ -467,16 +467,20 @@ body {
 /*********************************************
  * SLIDE CONTENTS
  *********************************************/
-.reveal .slides .slide-content {
-    width: 100%;
+
+.reveal .slides section>.slide-content {
+	height: 100%;
+	width: 100%;
+	display: flex;
+	flex-flow: column nowrap;
+	justify-content: flex-start;
+	align-items: stretch;
 }
 
-.reveal.center .slides .slide-body {
-    min-height: 0;
-    position: absolute;
-    top: 50%;
-    transform: translate(0%,-50%);
+.reveal.center .slides section>.slide-content {
+	justify-content: center;
 }
+
 
 /*********************************************
  * LAYOUT DEBUGGING
@@ -492,6 +496,11 @@ body {
 .reveal.show-canvas .slides>section.stack {
     background: rgba(0,0,255,0.3);
 }
+
+.reveal.show-canvas .slides .slide-head {
+	background: rgba(255,0,0,0.3);
+}
+
 .reveal.show-canvas .slides .slide-body {
     background: rgba(0,255,0,0.3);
 }

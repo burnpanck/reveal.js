@@ -1756,36 +1756,40 @@
 	 */
     function layoutSlideContents( width, height ) {
         // Move slide content into appropriate layout containers
-        var bodyDivTpl = document.createElement('div');
-        bodyDivTpl.classList.add('slide-content');
-        bodyDivTpl.classList.add('slide-body');
-        
+		var slideTpl = document.createElement('div');
+		slideTpl.classList.add('slide-content');
+		['head','body','foot'].forEach(function(name){
+			var div = document.createElement('div');
+			div.classList.add('slide-'+name);
+			slideTpl.appendChild(div);
+		});
+
 		toArray( dom.slides.querySelectorAll( SLIDES_SELECTOR ) ).forEach( function( slide ) {
             //TODO: more robust detection of vertical slides
             if( slide.firstElementChild && /section/gi.test(slide.firstElementChild.nodeName) ){
                 // This is a vertical slide wrapper, thus no slide
                 return;
             }
-            
+
+			if(!slide.querySelector('.slide-content')){
+				slide.appendChild(slideTpl.cloneNode(true));
+			}
+            var headDiv = slide.querySelector('.slide-head');
             var bodyDiv = slide.querySelector('.slide-body');
-            if(!bodyDiv){
-                bodyDiv = bodyDivTpl.cloneNode(false);
-                var inserted = false;
-                toArray(slide.childNodes).forEach(function(c){
-                    if(c.classList && '.slide-content' in c.classList){
-                        return;
-                    } else {
-                        if(!inserted){
-                            slide.insertBefore(bodyDiv,c);
-                            inserted = true;
-                        }
-                        bodyDiv.appendChild(c); // will automatically remove 'c' from the slide
-                    }
-                });
-                if(!inserted){
-                    slide.insertBefore(bodyDiv,slide.firstChild);
-                }
-            }
+            // move all child nodes which aren't yet .slide-content either into .slide-body or .slide-head
+			// if these do not exist yet, place them where the extract content starts
+			toArray(slide.childNodes).forEach(function(c){
+				if(c.classList && c.classList.contains('slide-content'))
+					return;
+				var ishead = c.nodeName[0] === 'H' ?
+					!(c.classList && c.classList.contains('nonheader')) :
+					(c.classList && c.classList.contains('header'));
+				if(ishead) {
+					headDiv.appendChild(c); // will automatically remove 'c' from the slide
+				} else {
+					bodyDiv.appendChild(c); // will automatically remove 'c' from the slide
+				}
+			});
         } );
 
 		// Handle sizing of elements with the 'stretch' class
