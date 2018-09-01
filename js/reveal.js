@@ -2039,33 +2039,6 @@
 					}
 				}
 
-				// Select all slides, vertical and horizontal
-				var slides = toArray( dom.wrapper.querySelectorAll( SLIDES_SELECTOR ) );
-
-				for( var i = 0, len = slides.length; i < len; i++ ) {
-					var slide = slides[ i ];
-
-					// Don't bother updating invisible slides
-					if( slide.style.display === 'none' ) {
-						continue;
-					}
-
-					if( config.center || slide.classList.contains( 'center' ) ) {
-						// Vertical stacks are not centred since their section
-						// children will be
-						if( slide.classList.contains( 'stack' ) ) {
-							slide.style.top = 0;
-						}
-						else {
-							slide.style.top = Math.max( ( size.height - slide.scrollHeight ) / 2, 0 ) + 'px';
-						}
-					}
-					else {
-						slide.style.top = '';
-					}
-
-				}
-
 			}
 
 			updateProgress();
@@ -2086,11 +2059,46 @@
 	 * @param {string|number} width
 	 * @param {string|number} height
 	 */
-	function layoutSlideContents( width, height ) {
+    function layoutSlideContents( width, height ) {
+        // Move slide content into appropriate layout containers
+		var slideTpl = document.createElement('div');
+		slideTpl.classList.add('slide-content');
+		['head','body','foot'].forEach(function(name){
+			var div = document.createElement('div');
+			div.classList.add('slide-'+name);
+			slideTpl.appendChild(div);
+		});
+
+		toArray( dom.slides.querySelectorAll( SLIDES_SELECTOR ) ).forEach( function( slide ) {
+            //TODO: more robust detection of vertical slides
+            if( slide.firstElementChild && /section/gi.test(slide.firstElementChild.nodeName) ){
+                // This is a vertical slide wrapper, thus no slide
+                return;
+            }
+
+			if(!slide.querySelector('.slide-content')){
+				slide.appendChild(slideTpl.cloneNode(true));
+			}
+            var headDiv = slide.querySelector('.slide-head');
+            var bodyDiv = slide.querySelector('.slide-body');
+            // move all child nodes which aren't yet .slide-content either into .slide-body or .slide-head
+			// if these do not exist yet, place them where the extract content starts
+			toArray(slide.childNodes).forEach(function(c){
+				if(c.classList && c.classList.contains('slide-content'))
+					return;
+				var ishead = c.nodeName[0] === 'H' ?
+					!(c.classList && c.classList.contains('nonheader')) :
+					(c.classList && c.classList.contains('header'));
+				if(ishead) {
+					headDiv.appendChild(c); // will automatically remove 'c' from the slide
+				} else {
+					bodyDiv.appendChild(c); // will automatically remove 'c' from the slide
+				}
+			});
+        } );
 
 		// Handle sizing of elements with the 'stretch' class
-		toArray( dom.slides.querySelectorAll( 'section > .stretch' ) ).forEach( function( element ) {
-
+		toArray( dom.slides.querySelectorAll( '.slide-body > .stretch' ) ).forEach( function( element ) {
 			// Determine how much vertical space we can use
 			var remainingHeight = getRemainingHeight( element, height );
 
@@ -2103,15 +2111,11 @@
 
 				element.style.width = ( nw * es ) + 'px';
 				element.style.height = ( nh * es ) + 'px';
-
-			}
-			else {
+			} else {
 				element.style.width = width + 'px';
 				element.style.height = remainingHeight + 'px';
 			}
-
 		} );
-
 	}
 
 	/**
@@ -2948,6 +2952,7 @@
 							futureFragment.classList.remove( 'current-fragment' );
 						}
 					}
+                // TODO: this belongs into the DOM creation part
 				}
 			}
 

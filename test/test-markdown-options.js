@@ -7,7 +7,7 @@ Reveal.addEventListener( 'ready', function() {
 	});
 
 	QUnit.test( 'Smart quotes are activated', function( assert ) {
-		var text = document.querySelector( '.reveal .slides>section>p' ).textContent;
+		var text = document.querySelector( '.reveal .slides>section div.slide-body>p' ).textContent;
 
 		assert.strictEqual( /['"]/.test( text ), false );
 		assert.strictEqual( /[“”‘’]/.test( text ), true );

@@ -93,7 +93,6 @@ body {
 
 .reveal .slides section .fragment.zoom-in {
 	transform: scale( 0.1 );
-
 	&.visible {
 		transform: none;
 	}
@@ -613,6 +612,7 @@ $controlsArrowAngleActive: 36deg;
 	overflow: visible;
 	z-index: 1;
 	text-align: center;
+    transition: perspective .4s ease;
 	perspective: 600px;
 	perspective-origin: 50% 40%;
 }
@@ -624,10 +624,16 @@ $controlsArrowAngleActive: 36deg;
 .reveal .slides>section,
 .reveal .slides>section>section {
 	display: none;
-	position: absolute;
-	width: 100%;
-	padding: 20px 0px;
-	pointer-events: auto;
+
+    position: absolute;
+    top: 0%;
+    left: 0%;
+
+	box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    padding: 0px 0px;
+		pointer-events: auto;
 
 	z-index: 10;
 	transform-style: flat;
@@ -699,6 +705,47 @@ $controlsArrowAngleActive: 36deg;
 	opacity: 0;
 }
 
+/*********************************************
+ * SLIDE CONTENTS
+ *********************************************/
+
+.reveal .slides section>.slide-content {
+	height: 100%;
+	width: 100%;
+	display: flex;
+	flex-flow: column nowrap;
+	justify-content: flex-start;
+	align-items: stretch;
+}
+
+.reveal.center .slides section>.slide-content {
+	justify-content: center;
+}
+
+
+/*********************************************
+ * LAYOUT DEBUGGING
+ *********************************************/
+
+.reveal.show-canvas .slides {
+    background: rgba(150,255,0,0.3);
+}
+.reveal.show-canvas .slides>section,
+.reveal.show-canvas .slides>section>section {
+    background: rgba(255,155,0,0.3);
+}
+.reveal.show-canvas .slides>section.stack {
+    background: rgba(0,0,255,0.3);
+}
+
+.reveal.show-canvas .slides .slide-head {
+	background: rgba(255,0,0,0.3);
+}
+
+.reveal.show-canvas .slides .slide-body {
+    background: rgba(0,255,0,0.3);
+}
+
 
 /*********************************************
  * Mixins for readability of transitions
@@ -730,7 +777,6 @@ $controlsArrowAngleActive: 36deg;
 		@content;
 	}
 }
-
 @mixin transition-vertical-past($style) {
 	.reveal .slides>section>section[data-transition=#{$style}].past,
 	.reveal .slides>section>section[data-transition~=#{$style}-out].past,
@@ -923,7 +969,7 @@ $controlsArrowAngleActive: 36deg;
  *********************************************/
 
 .reveal.page .slides {
-	perspective-origin: 0% 50%;
+    perspective-origin: 50% 50%;
 	perspective: 3000px;
 }
 
@@ -1270,7 +1316,7 @@ $controlsArrowAngleActive: 36deg;
 .reveal[data-background-transition=zoom]>.backgrounds .slide-background>.slide-background.past,
 .reveal>.backgrounds .slide-background>.slide-background.past[data-background-transition=zoom] {
 	opacity: 0;
-		visibility: hidden;
+	visibility: hidden;
 		transform: scale(16);
 }
 .reveal[data-background-transition=zoom]>.backgrounds .slide-background>.slide-background.future,
